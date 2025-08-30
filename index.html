@@ -16,7 +16,8 @@
   <script>
     const outputEl = document.getElementById("output");
 
-    loadPyodide().then(async pyodide => {
+    async function main() {
+      let pyodide = await loadPyodide();
       const btn = document.getElementById("run-btn");
       btn.disabled = false;
       btn.innerText = "Run Python File";
@@ -27,16 +28,25 @@
           const response = await fetch("script.py");
           const code = await response.text();
 
-          // Redirect stdout/stderr to the output element using stream
-          pyodide.setStdout({ stream: (s) => outputEl.textContent += s });
-          pyodide.setStderr({ stream: (s) => outputEl.textContent += s });
-
-          await pyodide.runPythonAsync(code);
+          // Run Python and get print output
+          // We'll wrap the code to capture stdout in Python
+          const wrappedCode = `
+            import io, sys
+            _buffer = io.StringIO()
+            sys.stdout = _buffer
+            sys.stderr = _buffer
+            ${code}
+            _buffer.getvalue()
+          `;
+          const result = await pyodide.runPythonAsync(wrappedCode);
+          outputEl.textContent = result;
         } catch (err) {
           outputEl.textContent = err;
         }
       };
-    });
+    }
+
+    main();
   </script>
 </body>
 </html>
