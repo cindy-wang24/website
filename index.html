@@ -16,7 +16,6 @@
   <script>
     const outputEl = document.getElementById("output");
 
-    // Load Pyodide
     loadPyodide().then(async pyodide => {
       const btn = document.getElementById("run-btn");
       btn.disabled = false;
@@ -25,15 +24,13 @@
       btn.onclick = async () => {
         outputEl.textContent = ""; // clear previous output
         try {
-          // Fetch Python file from repo
           const response = await fetch("script.py");
           const code = await response.text();
 
-          // Redirect stdout/stderr to the output element
+          // Redirect stdout and stderr directly, no extra newlines
           pyodide.setStdout({ batched: (s) => outputEl.textContent += s });
           pyodide.setStderr({ batched: (s) => outputEl.textContent += s });
 
-          // Run the code
           await pyodide.runPythonAsync(code);
         } catch (err) {
           outputEl.textContent = err;
