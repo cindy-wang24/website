@@ -2,36 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Run Python in Browser</title>
+  <title>Python Runner</title>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
 </head>
 <body>
   <h1>Python Runner</h1>
-  <textarea id="python-code" rows="8" cols="50">
+
+  <textarea id="python-code" rows="10" cols="50">
 print("Hello from Python!")
 x = 5
 y = 7
 print("x + y =", x + y)
   </textarea><br>
-  <button onclick="runPython()">Run Code</button>
+
+  <button id="run-btn" disabled>Loading Python...</button>
 
   <h2>Output:</h2>
   <pre id="output"></pre>
 
   <script>
-    let pyodideReadyPromise = loadPyodide();
+    const outputEl = document.getElementById("output");
+    const codeEl = document.getElementById("python-code");
 
-    async function runPython() {
-      let pyodide = await pyodideReadyPromise;
-      let code = document.getElementById("python-code").value;
-      try {
-        let result = await pyodide.runPythonAsync(code);
-        document.getElementById("output").textContent = result ?? "";
-      } catch (err) {
-        document.getElementById("output").textContent = err;
-      }
-    }
+    // Load Pyodide
+    loadPyodide().then(async pyodide => {
+      const btn = document.getElementById("run-btn");
+      btn.disabled = false;
+      btn.innerText = "Run Code";
+
+      btn.onclick = async () => {
+        outputEl.textContent = ""; // clear previous output
+        try {
+          // Redirect Python's stdout/stderr to JS console
+          pyodide.setStdout({
+            batched: (s) => outputEl.textContent += s
+          });
+          pyodide.setStderr({
+            batched: (s) => outputEl.textContent += s
+          });
+
+          // Run the code from the textarea
+          await pyodide.runPythonAsync(codeEl.value);
+        } catch (err) {
+          outputEl.textContent = err;
+        }
+      };
+    });
   </script>
 </body>
 </html>
-
