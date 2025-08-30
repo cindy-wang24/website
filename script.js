@@ -68,9 +68,13 @@ function angle(p1, mid, p2) {
 }
 
 function analyzeRowing(keypoints) {
-  const nose = keypoints.nose, r_ankle = keypoints.ankle_r, l_ankle = keypoints.ankle_l;
+  const nose = keypoints.nose;
+  const r_ankle = keypoints.ankle_r;
+  const l_ankle = keypoints.ankle_l;
+
   let elbow, knee, hip, shoulder, wrist, ankle;
 
+  // Determine facing direction
   if (nose[0] < r_ankle[0] && nose[0] < l_ankle[0]) {
     elbow = keypoints.r_elbow; knee = keypoints.knee_r; hip = keypoints.hip_r;
     shoulder = keypoints.shoulder_r; wrist = keypoints.wrist_r; ankle = keypoints.ankle_r;
@@ -79,20 +83,22 @@ function analyzeRowing(keypoints) {
     shoulder = keypoints.shoulder_l; wrist = keypoints.wrist_l; ankle = keypoints.ankle_l;
   }
 
-  const not_stand = Math.abs(shoulder[1]-hip[1]) / Math.abs(hip[1]-ankle[1]) > 1;
+  // New, browser-friendly thresholds
+  const not_stand = Math.abs(shoulder[1]-hip[1]) / Math.abs(hip[1]-ankle[1]) > 0.5; 
   const height = elbow[1] < hip[1] && elbow[1] < ankle[1] && wrist[1] < ankle[1];
-  const not_lay = Math.abs(nose[1]-knee[1]) / Math.abs(knee[0]-hip[0]) > 0.6;
+  const not_lay = Math.abs(nose[1]-knee[1]) / Math.abs(knee[0]-hip[0]) < 2.0;        
   const knee_angle = angle(ankle, knee, hip);
   const hip_angle = angle(shoulder, hip, knee);
-  const not_sit = knee_angle > 100 || knee_angle < 80;
-  const is_row = not_stand && height && !not_lay && !not_sit;
+  const not_sit = knee_angle > 110 || knee_angle < 70;                               
+  const is_row = not_stand && height && not_lay && not_sit;
 
   let results = "";
+
   if (is_row) {
     if (knee_angle < 100) {
       results += "The person is at the catch.\n";
       if (Math.abs(elbow[0]-knee[0]) > Math.abs(knee[0]-ankle[0])) {
-        if (hip_angle < 40) results += "Straighten your back and lean less forward at the catch.\n";
+        if (hip_angle < 50) results += "Straighten your back and lean less forward at the catch.\n";
         else results += "Lean forward at the catch.\n";
       }
     } else if (knee_angle > 150) {
@@ -101,10 +107,14 @@ function analyzeRowing(keypoints) {
       if (Math.abs(wrist[1]-hip[1]) > Math.abs(wrist[1]-shoulder[1])) results += "Place your wrists lower at the finish.\n";
     } else {
       results += "This person is between catch and finish.\n";
-      if (hip_angle > 90) results += "Lean forward as you approach the catch.\n";
+      if (hip_angle > 80) results += "Lean forward as you approach the catch.\n";
     }
-  } else results += "The person is not rowing.\n";
-
+  } else {
+    results += "The person is not rowing.\n";
+  }
+  if (results===''){
+    results='Your rowing is great!';
+  }
   return results;
 }
 
