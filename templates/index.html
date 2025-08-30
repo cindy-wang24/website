@@ -3,18 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <title>Pose Detection</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      text-align: center;
+      margin-top: 150px;
+      font-family: Arial, sans-serif;
+    }
+    #processing {
+      display: none; /* hidden by default */
+      font-size: 1.5em;
+      margin-top: 20px;
+    }
+    img {
+      margin-top: 20px;
+      max-width: 80%;
+      border: 2px solid white;
+      border-radius: 10px;
+    }
+  </style>
 </head>
-<body style="background:black; color:white; text-align:center; margin-top:150px; font-family:Arial,sans-serif;">
+<body>
   <h1 style="font-size:4em; font-weight:bold; margin-bottom:30px;">Pose Detection</h1>
 
-  <form method="POST" enctype="multipart/form-data">
+  <form id="upload-form" method="POST" enctype="multipart/form-data">
     <input type="file" name="image" accept="image/*" required><br><br>
     <button type="submit" style="font-size:1.2em; padding:10px 20px; cursor:pointer;">Upload & Process</button>
   </form>
 
+  <div id="processing">Processing image...</div>
+
   {% if processed_image %}
-    <img src="{{processed_image }}" alt="Processed Image"
-         style="margin-top:20px; max-width:80%; border:2px solid white; border-radius:10px;">
+    <img src="{{ processed_image }}" alt="Processed Image">
   {% endif %}
+
+  <script>
+    const form = document.getElementById("upload-form");
+    const processingDiv = document.getElementById("processing");
+
+    form.addEventListener("submit", () => {
+      processingDiv.style.display = "block"; // show the message
+    });
+  </script>
 </body>
 </html>
