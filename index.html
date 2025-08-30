@@ -18,31 +18,27 @@
     const btn = document.getElementById("run-btn");
 
     async function main() {
-      // Load Pyodide
       const pyodide = await loadPyodide();
 
-      // Enable the Run button
       btn.disabled = false;
       btn.innerText = "Run Python File";
 
       btn.onclick = async () => {
-        outputEl.textContent = ""; // clear previous output
+        outputEl.textContent = "";
         try {
           const response = await fetch("script.py");
           const code = await response.text();
 
-          // Run the code directly; Python prints will appear as-is
+          // Capture stdout/stderr exactly as Python prints
           const result = await pyodide.runPythonAsync(`
-import sys
-from contextlib import redirect_stdout, redirect_stderr
-import io
+import io, sys
 buffer = io.StringIO()
-with redirect_stdout(buffer), redirect_stderr(buffer):
-    ${code}
+sys.stdout = buffer
+sys.stderr = buffer
+${code}
 buffer.getvalue()
           `);
 
-          // Display output exactly as Python produces it
           outputEl.textContent = result;
         } catch (err) {
           outputEl.textContent = err;
