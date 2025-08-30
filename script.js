@@ -1,5 +1,4 @@
 const uploadBtn = document.getElementById("uploadBtn");
-const statusEl = document.getElementById("status");
 const canvas = document.getElementById("canvas");
 const resultsEl = document.getElementById("results");
 
@@ -24,10 +23,6 @@ uploadBtn.addEventListener("click", () => imageInput.click());
 imageInput.addEventListener("change", () => {
   const file = imageInput.files[0];
   if (!file) return;
-
-  statusEl.textContent = "Processing image...";
-  resultsEl.textContent = "";
-
   const img = new Image();
   img.onload = () => {
     canvas.width = img.width;
@@ -68,6 +63,7 @@ function angle(p1, mid, p2) {
 }
 
 function analyzeRowing(keypoints) {
+  let results = "";
   const nose = keypoints.nose;
   const r_ankle = keypoints.ankle_r;
   const l_ankle = keypoints.ankle_l;
@@ -89,24 +85,32 @@ function analyzeRowing(keypoints) {
   const not_lay = Math.abs(nose[1]-knee[1]) / Math.abs(knee[0]-hip[0]) < 2.0;        
   const knee_angle = angle(ankle, knee, hip);
   const hip_angle = angle(shoulder, hip, knee);
-  const not_sit = knee_angle > 110 || knee_angle < 70;                               
+  const not_sit = knee_angle > 100 || knee_angle < 80;                               
   const is_row = not_stand && height && not_lay && not_sit;
 
-  let results = "";
-
+  
+  // Add all booleans for debugging / inspection
+//   results += `not_stand: ${not_stand}\n`;
+//   results += `height: ${height}\n`;
+//   results += `not_lay: ${not_lay}\n`;
+//   results += `not_sit: ${not_sit}\n`;
+//   results += `knee_angle: ${knee_angle.toFixed(1)}\n`;
+//   results += `hip_angle: ${hip_angle.toFixed(1)}\n\n`;
+//   results +=Math.abs(wrist[1]-hip[1]) +'\n';
+//   results +=Math.abs(wrist[1]-shoulder[1])+'\n';
   if (is_row) {
     if (knee_angle < 100) {
-      results += "The person is at the catch.\n";
+    //   results += "The person is at the catch.\n";
       if (Math.abs(elbow[0]-knee[0]) > Math.abs(knee[0]-ankle[0])) {
         if (hip_angle < 50) results += "Straighten your back and lean less forward at the catch.\n";
         else results += "Lean forward at the catch.\n";
       }
     } else if (knee_angle > 150) {
-      results += "The person is at the finish.\n";
+    //   results += "The person is at the finish.\n";
       if (Math.abs(knee[0]-elbow[0]) < Math.abs(elbow[0]-shoulder[0])) results += "Place your hands close to your chest at the finish.\n";
       if (Math.abs(wrist[1]-hip[1]) > Math.abs(wrist[1]-shoulder[1])) results += "Place your wrists lower at the finish.\n";
     } else {
-      results += "This person is between catch and finish.\n";
+    //   results += "This person is between catch and finish.\n";
       if (hip_angle > 80) results += "Lean forward as you approach the catch.\n";
     }
   } else {
@@ -125,7 +129,6 @@ function onResults(results) {
 
   if (!results.poseLandmarks) {
     resultsEl.textContent = "No person detected in the image.";
-    statusEl.textContent = "";
     return;
   }
 
@@ -134,5 +137,5 @@ function onResults(results) {
 
   const keypoints = extractKeyLandmarks(results.poseLandmarks, canvas.width, canvas.height);
   resultsEl.textContent = analyzeRowing(keypoints);
-  statusEl.textContent = "";
+  resultsEl.style.display = "block";
 }

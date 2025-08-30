@@ -38,28 +38,26 @@ button:hover {
   background-color: #ddd;
 }
 
-#status {
-  margin-top: 10px;
-  font-style: italic;
-  color: #ffd700;
-}
-
 .output {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  display: flex;            /* use flex layout */
+  flex-direction: column;   /* stack children vertically */
+  align-items: center;      /* center everything horizontally */
+  width: 100%;              /* take full width */
   margin-top: 20px;
-  gap: 20px;
 }
 
-canvas {
-  max-width: 60%;
+#canvas {
+  display: block;           /* ensures it’s on its own line */
+  max-width: 80%;           /* responsive width */
   border: 2px solid white;
   border-radius: 10px;
 }
 
 #results {
-  max-width: 35%;
+  display: none;           
+  margin-top: 15px;         
+  font-size: 20px;
+  max-width: 80%;           
   background-color: #111;
   padding: 15px;
   border-radius: 10px;
