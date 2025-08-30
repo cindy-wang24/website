@@ -15,10 +15,13 @@
 
   <script>
     const outputEl = document.getElementById("output");
+    const btn = document.getElementById("run-btn");
 
     async function main() {
-      let pyodide = await loadPyodide();
-      const btn = document.getElementById("run-btn");
+      // Load Pyodide
+      const pyodide = await loadPyodide();
+
+      // Enable the Run button
       btn.disabled = false;
       btn.innerText = "Run Python File";
 
@@ -28,17 +31,18 @@
           const response = await fetch("script.py");
           const code = await response.text();
 
-          // Run Python and get print output
-          // We'll wrap the code to capture stdout in Python
-          const wrappedCode = `
-            import io, sys
-            _buffer = io.StringIO()
-            sys.stdout = _buffer
-            sys.stderr = _buffer
-            ${code}
-            _buffer.getvalue()
-          `;
-          const result = await pyodide.runPythonAsync(wrappedCode);
+          // Run the code directly; Python prints will appear as-is
+          const result = await pyodide.runPythonAsync(`
+import sys
+from contextlib import redirect_stdout, redirect_stderr
+import io
+buffer = io.StringIO()
+with redirect_stdout(buffer), redirect_stderr(buffer):
+    ${code}
+buffer.getvalue()
+          `);
+
+          // Display output exactly as Python produces it
           outputEl.textContent = result;
         } catch (err) {
           outputEl.textContent = err;
