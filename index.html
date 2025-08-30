@@ -2,44 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Python File Runner</title>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+  <title>Pose Detection</title>
+  <style>
+    body { background: black; color: white; font-family: Arial; text-align: center; }
+    h1 { font-size: 4em; font-weight: bold; margin-top: 50px; }
+    input[type=file] { margin: 20px; color: white; }
+    img { margin-top: 20px; max-width: 80%; border: 2px solid white; border-radius: 10px; }
+    button { font-size: 1.2em; padding: 10px 20px; cursor: pointer; }
+  </style>
 </head>
 <body>
-  <h1>Python File Runner</h1>
+  <h1>Pose Detection</h1>
 
-  <button id="run-btn" disabled>Loading Python...</button>
+  <form method="POST" enctype="multipart/form-data" action="/">
+    <input type="file" name="image" accept="image/*" required>
+    <br>
+    <button type="submit">Upload & Process</button>
+  </form>
 
-  <h2>Output:</h2>
-  <pre id="output"></pre>
-
-  <script>
-    const outputEl = document.getElementById("output");
-
-    // Load Pyodide
-    loadPyodide().then(async pyodide => {
-      const btn = document.getElementById("run-btn");
-      btn.disabled = false;
-      btn.innerText = "Run Python File";
-
-      btn.onclick = async () => {
-        outputEl.textContent = ""; // clear previous output
-        try {
-          // Fetch Python file from repo
-          const response = await fetch("script.py");
-          const code = await response.text();
-
-          // Redirect stdout/stderr to the output element
-          pyodide.setStdout({ batched: (s) => outputEl.textContent += s });
-          pyodide.setStderr({ batched: (s) => outputEl.textContent += s });
-
-          // Run the code
-          await pyodide.runPythonAsync(code);
-        } catch (err) {
-          outputEl.textContent = err;
-        }
-      };
-    });
-  </script>
+  <img id="processed-image" src="" alt="Processed Image Will Appear Here">
 </body>
 </html>
