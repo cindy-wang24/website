@@ -10,14 +10,14 @@
 <body>
   <div class="container">
     <h1>Rowing Pose Analyzer</h1>
-
-    <input type="file" id="imageInput" accept="image/*" style="display:none;">
     <button id="uploadBtn">Upload & Analyze</button>
 
     <p id="status"></p>
 
-    <canvas id="canvas" style="display:none;"></canvas>
-    <pre id="results"></pre>
+    <div class="output">
+      <canvas id="canvas" style="display:none;"></canvas>
+      <pre id="results"></pre>
+    </div>
   </div>
 
   <script src="script.js"></script>
