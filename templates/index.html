@@ -5,45 +5,67 @@
   <title>Pose Detection</title>
   <style>
     body {
-      background: black;
-      color: white;
-      text-align: center;
-      margin-top: 150px;
+      background:black;
+      color:white;
+      text-align:center;
+      margin-top:150px;
       font-family: Arial, sans-serif;
     }
     #processing {
-      display: none; /* hidden by default */
-      font-size: 1.5em;
-      margin-top: 20px;
+      display:none;
+      font-size:1.5em;
+      margin-top:20px;
     }
     img {
-      margin-top: 20px;
-      max-width: 80%;
-      border: 2px solid white;
-      border-radius: 10px;
+      margin-top:20px;
+      max-width:80%;
+      border:2px solid white;
+      border-radius:10px;
+    }
+    button {
+      font-size:1.2em;
+      padding:10px 20px;
+      cursor:pointer;
     }
   </style>
 </head>
 <body>
   <h1 style="font-size:4em; font-weight:bold; margin-bottom:30px;">Pose Detection</h1>
 
-  <form id="upload-form" method="POST" enctype="multipart/form-data">
-    <input type="file" name="image" accept="image/*" required><br><br>
-    <button type="submit" style="font-size:1.2em; padding:10px 20px; cursor:pointer;">Upload & Process</button>
+  <form id="upload-form" enctype="multipart/form-data">
+    <button type="button" id="upload-btn">Upload & Process</button>
   </form>
 
   <div id="processing">Processing image...</div>
-
-  {% if processed_image %}
-    <img src="{{ processed_image }}" alt="Processed Image">
-  {% endif %}
+  <img id="processed-image" src="" alt="Processed Image Will Appear Here">
 
   <script>
+    const uploadBtn = document.getElementById("upload-btn");
     const form = document.getElementById("upload-form");
     const processingDiv = document.getElementById("processing");
+    const img = document.getElementById("processed-image");
 
-    form.addEventListener("submit", () => {
-      processingDiv.style.display = "block"; // show the message
+    uploadBtn.addEventListener("click", async () => {
+      // Trigger file selection
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.onchange = async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        processingDiv.style.display = "block";
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const response = await fetch("/", { method: "POST", body: formData });
+        const data = await response.json();
+
+        img.src = data.processed_image + "?t=" + new Date().getTime(); // cache buster
+        processingDiv.style.display = "none";
+      };
+      fileInput.click();
     });
   </script>
 </body>
