@@ -3,38 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Pose Detection</title>
-  <style>
-    body {
-      background: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 150px; /* pushes all content lower */
-    }
-
-    h1 {
-      font-size: 4em;
-      font-weight: bold;
-      margin-bottom: 30px;
-    }
-
-    img {
-      margin-top: 20px;
-      max-width: 80%;
-      border: 2px solid white;
-      border-radius: 10px;
-    }
-  </style>
 </head>
-<body>
-  <h1>Pose Detection</h1>
+<body style="background:black; color:white; text-align:center; margin-top:150px; font-family:Arial,sans-serif;">
+  <h1 style="font-size:4em; font-weight:bold; margin-bottom:30px;">Pose Detection</h1>
 
   <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="image" accept="image/*" required>
-    <br><br>
-    <button type="submit">Upload & Process</button>
+    <input type="file" name="image" accept="image/*" required><br><br>
+    <button type="submit" style="font-size:1.2em; padding:10px 20px; cursor:pointer;">Upload & Process</button>
   </form>
 
-  <img id="processed-image" src="" alt="Processed Image Will Appear Here">
+  <img id="processed-image" src="" alt="Processed Image Will Appear Here" 
+       style="margin-top:20px; max-width:80%; border:2px solid white; border-radius:10px;">
 </body>
 </html>
