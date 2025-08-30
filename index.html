@@ -5,16 +5,20 @@
   <title>Rowing Pose Analyzer</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
 </head>
 <body>
-  <h1>Rowing Pose Analyzer</h1>
+  <div class="container">
+    <h1>Rowing Pose Analyzer</h1>
 
-  <input type="file" id="imageInput" accept="image/*">
-  <button id="analyzeBtn">Analyze</button>
-  <p id="status"></p>
-  <canvas id="canvas" style="display:none;"></canvas>
-  <pre id="results"></pre>
+    <input type="file" id="imageInput" accept="image/*" style="display:none;">
+    <button id="uploadBtn">Upload & Analyze</button>
+
+    <p id="status"></p>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+    <pre id="results"></pre>
+  </div>
 
   <script src="script.js"></script>
 </body>
