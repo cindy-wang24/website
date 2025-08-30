@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, redirect, url_for
+from flask import Flask, request, send_file, render_template, url_for
 import os
 import cv2
 import mediapipe as mp
@@ -32,14 +32,12 @@ def index():
 
             output_path = os.path.join(OUTPUT_FOLDER, file.filename)
             cv2.imwrite(output_path, image)
-            processed_image_path = f"/processed/{file.filename}"
+            processed_image_path = url_for("processed_image", filename=file.filename)
 
             os.remove(input_path)
     
-    # Serve index.html with processed image URL appended as query param
-    if processed_image_path:
-        return redirect(url_for('static', filename=f"index.html?processed={processed_image_path}"))
-    return send_file("index.html")
+    # Render the page, passing the processed image URL if available
+    return render_template("index.html", processed_image=processed_image_path)
 
 @app.route("/processed/<filename>")
 def processed_image(filename):
@@ -47,3 +45,4 @@ def processed_image(filename):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+

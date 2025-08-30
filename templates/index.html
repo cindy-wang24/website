@@ -12,7 +12,9 @@
     <button type="submit" style="font-size:1.2em; padding:10px 20px; cursor:pointer;">Upload & Process</button>
   </form>
 
-  <img id="processed-image" src="" alt="Processed Image Will Appear Here" 
-       style="margin-top:20px; max-width:80%; border:2px solid white; border-radius:10px;">
+  {% if processed_image %}
+    <img src="{{processed_image }}" alt="Processed Image"
+         style="margin-top:20px; max-width:80%; border:2px solid white; border-radius:10px;">
+  {% endif %}
 </body>
 </html>
