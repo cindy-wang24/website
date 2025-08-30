@@ -2,18 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Python Runner</title>
+  <title>Python File Runner</title>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
 </head>
 <body>
-  <h1>Python Runner</h1>
-
-  <textarea id="python-code" rows="10" cols="50">
-print("Hello from Python!")
-x = 5
-y = 7
-print("x + y =", x + y)
-  </textarea><br>
+  <h1>Python File Runner</h1>
 
   <button id="run-btn" disabled>Loading Python...</button>
 
@@ -22,27 +15,26 @@ print("x + y =", x + y)
 
   <script>
     const outputEl = document.getElementById("output");
-    const codeEl = document.getElementById("python-code");
 
     // Load Pyodide
     loadPyodide().then(async pyodide => {
       const btn = document.getElementById("run-btn");
       btn.disabled = false;
-      btn.innerText = "Run Code";
+      btn.innerText = "Run Python File";
 
       btn.onclick = async () => {
         outputEl.textContent = ""; // clear previous output
         try {
-          // Redirect Python's stdout/stderr to JS console
-          pyodide.setStdout({
-            batched: (s) => outputEl.textContent += s
-          });
-          pyodide.setStderr({
-            batched: (s) => outputEl.textContent += s
-          });
+          // Fetch Python file from repo
+          const response = await fetch("script.py");
+          const code = await response.text();
 
-          // Run the code from the textarea
-          await pyodide.runPythonAsync(codeEl.value);
+          // Redirect stdout/stderr to the output element
+          pyodide.setStdout({ batched: (s) => outputEl.textContent += s });
+          pyodide.setStderr({ batched: (s) => outputEl.textContent += s });
+
+          // Run the code
+          await pyodide.runPythonAsync(code);
         } catch (err) {
           outputEl.textContent = err;
         }
