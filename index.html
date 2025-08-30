@@ -15,30 +15,30 @@
 
   <script>
     const outputEl = document.getElementById("output");
-    const btn = document.getElementById("run-btn");
 
     async function main() {
-      const pyodide = await loadPyodide();
-
+      let pyodide = await loadPyodide();
+      const btn = document.getElementById("run-btn");
       btn.disabled = false;
       btn.innerText = "Run Python File";
 
       btn.onclick = async () => {
-        outputEl.textContent = "";
+        outputEl.textContent = ""; // clear previous output
         try {
           const response = await fetch("script.py");
           const code = await response.text();
 
-          // Capture stdout/stderr exactly as Python prints
-          const result = await pyodide.runPythonAsync(`
+          // Run Python and get print output
+          // We'll wrap the code to capture stdout in Python
+          const wrappedCode = `
 import io, sys
-buffer = io.StringIO()
-sys.stdout = buffer
-sys.stderr = buffer
+_buffer = io.StringIO()
+sys.stdout = _buffer
+sys.stderr = _buffer
 ${code}
-buffer.getvalue()
-          `);
-
+_buffer.getvalue()
+          `;
+          const result = await pyodide.runPythonAsync(wrappedCode);
           outputEl.textContent = result;
         } catch (err) {
           outputEl.textContent = err;
