@@ -27,13 +27,9 @@
           const response = await fetch("script.py");
           const code = await response.text();
 
-          // Redirect stdout/stderr to output element, adding newline after each batch
-          pyodide.setStdout({
-            batched: (s) => outputEl.textContent += s + '\n'
-          });
-          pyodide.setStderr({
-            batched: (s) => outputEl.textContent += s + '\n'
-          });
+          // Redirect stdout/stderr to the output element using stream
+          pyodide.setStdout({ stream: (s) => outputEl.textContent += s });
+          pyodide.setStderr({ stream: (s) => outputEl.textContent += s });
 
           await pyodide.runPythonAsync(code);
         } catch (err) {
